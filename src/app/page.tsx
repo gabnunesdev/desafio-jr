@@ -1,8 +1,9 @@
 "use client"
 
-import { LogOut, Search, Plus, Cat, Dog, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
+import { LogOut, Search, Plus, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { logout } from "@/actions/auth"
+import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -69,7 +70,7 @@ export default function Dashboard() {
             </Button>
         </div>
 
-        <Button className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 rounded-lg h-12 flex items-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+        <Button className="bg-[linear-gradient(90deg,#00CAFC_0%,#0056E2_100%)] hover:bg-blue-500 text-white font-semibold px-6 rounded-lg h-12 flex items-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.4)]">
            <div className="bg-white/20 rounded-full p-0.5">
                <Plus className="h-4 w-4" />
            </div>
@@ -83,26 +84,24 @@ export default function Dashboard() {
           <Card key={pet.id} className="bg-slate-900/50 border-none shadow-none hover:bg-slate-900 transition-colors cursor-pointer group">
             <CardContent className="p-4 flex items-center gap-4">
                {/* Icon Circle */}
-               <div className={`rounded-full p-3 ${pet.type === 'CAT' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`}>
-                  {pet.type === 'CAT' ? <Cat className="h-6 w-6" /> : <Dog className="h-6 w-6" />}
+               <div className="rounded-full p-3 bg-[linear-gradient(90deg,#00CAFC_0%,#0056E2_100%)] flex items-center justify-center">
+                  {pet.type === 'CAT' ? (
+                     <Image src="/cat-icon.svg" alt="Gato" width={32} height={32} className="h-8 w-8" />
+                  ) : (
+                     <Image src="/dog-icon.svg" alt="Cachorro" width={32} height={32} className="h-8 w-8" />
+                  )}
                </div>
                
                {/* Info */}
                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                     {/* Placeholder icon from Figma */}
-                     <div className="w-5 h-5 shrink-0 flex items-center justify-center">
-                        {/* Add Pet/Collar Icon here */}
-                     </div>
+                     <Image src="/collar-icon.svg" alt="Coleira" width={20} height={20} className="w-5 h-5 text-slate-200" />
                      <span className="truncate text-slate-200 font-bold text-sm">
                         {pet.name}
                      </span>
                   </div>
                   <div className="flex items-center gap-2">
-                     {/* Placeholder icon from Figma */}
-                     <div className="w-5 h-5 shrink-0 flex items-center justify-center">
-                        {/* Add User Icon here */}
-                     </div>
+                     <Image src="/user-icon.svg" alt="Dono" width={20} height={20} className="w-5 h-5 text-slate-400" />
                      <span className="truncate text-slate-400 text-xs">
                         {pet.owner}
                      </span>
@@ -110,7 +109,7 @@ export default function Dashboard() {
                </div>
 
                {/* Chevron */}
-               <div className="text-slate-600 group-hover:text-slate-400">
+               <div className="text-white group-hover:text-slate-400">
                   <ChevronDown className="h-5 w-5" />
                </div>
             </CardContent>
