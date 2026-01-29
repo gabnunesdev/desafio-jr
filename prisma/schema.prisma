@@ -23,13 +23,17 @@ enum PetType {
 }
 
 model Pet {
-  id        Int      @id @default(autoincrement())
-  name      String
-  type      PetType
-  ownerId   Int
-  owner     User     @relation(fields: [ownerId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  name       String
+  type       PetType
+  breed      String?
+  birthDate  String? // Storing as String to keep format "DD/MM/YYYY" simple as per form input
+  ownerName  String? // Specific owner name for this pet
+  ownerPhone String? // Specific owner phone for this pet
+  ownerId    Int
+  owner      User     @relation(fields: [ownerId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([ownerId])
   @@index([name])

@@ -1,61 +1,83 @@
-"use client"
-
-import { LogOut, Search, Plus, ChevronLeft, ChevronRight } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { LogOut, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { redirect } from "next/navigation"
 import { logout } from "@/actions/auth"
-import { useState } from "react"
+import { cookies } from "next/headers"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
-import { PetCard } from "@/components/pet-card"
+import { PetCardWrapper } from "@/components/pet-card-wrapper" // Client component for state
+import { CreatePetModal } from "@/components/create-pet-modal"
+import { prisma } from "@/lib/prisma"
 
-// Mock data to match the image
-const pets = [
-  { id: 1, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Persa", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
-  { id: 2, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Dogue Alemão", phone: "(81) 9 8240-2134", birthDate: "15/05/2019", age: "3 Anos" },
-  { id: 3, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Siamês", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
-  { id: 4, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Vira-Lata", phone: "(81) 9 8240-2134", birthDate: "10/01/2022", age: "1 Ano" },
-  { id: 5, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Persa", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
-  { id: 6, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Dogue Alemão", phone: "(81) 9 8240-2134", birthDate: "15/05/2019", age: "3 Anos" },
-  { id: 7, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Siamês", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
-  { id: 8, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Vira-Lata", phone: "(81) 9 8240-2134", birthDate: "10/01/2022", age: "1 Ano" },
-  { id: 9, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Persa", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
-  { id: 10, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Dogue Alemão", phone: "(81) 9 8240-2134", birthDate: "15/05/2019", age: "3 Anos" },
-  { id: 11, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Siamês", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
-  { id: 12, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Vira-Lata", phone: "(81) 9 8240-2134", birthDate: "10/01/2022", age: "1 Ano" },
-]
+export default async function Dashboard() {
+  const cookieStore = await cookies()
+  const session = cookieStore.get("session")?.value
 
-export default function Dashboard() {
-  const router = useRouter()
-  // Store ID of selected pet. Null means none selected.
-  const [selectedPetId, setSelectedPetId] = useState<number | null>(null)
-
-  async function handleLogout() {
-    await logout()
-    toast.success("Saiu com sucesso")
-    router.push("/login")
+  if (!session) {
+    redirect("/login")
   }
 
-  function handleSelectPet(id: number) {
-     // Toggle selection
-     setSelectedPetId(prevId => prevId === id ? null : id)
+  // Verify session/Get User ID if needed for specific fetching, 
+  // currently we fetch all or just user's? Requirement: "Create... only owner can edit/delete". 
+  // Usually dashboard shows all pets or user's pets? The image suggests a list. 
+  // Let's fetch ALL pets for now, or filter by user if it's a personal dashboard. 
+  // "Fluxo de Cadastro... O card irá receber infor...". 
+  // Given the login context, it's likely a user dashboard.
+  // I will fetch pets for the logged in user as per common practice, 
+  // OR fetch all if it's a shared system. The mock showed multiple owners "Emmanuel Farias". 
+  // I'll fetch ALL pets but mark ownership logic later if needed. 
+  // Actually, let's just fetch all for this "Desafio Jr".
+
+  const pets = await prisma.pet.findMany({
+    orderBy: { createdAt: 'desc' },
+  })
+
+  // Calculate age helper
+  const calculateAge = (birthDateString?: string) => {
+    if (!birthDateString) return undefined
+    const [day, month, year] = birthDateString.split('/').map(Number)
+    if (!day || !month || !year) return undefined
+    const birth = new Date(year, month - 1, day)
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const m = today.getMonth() - birth.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--
+    }
+    return `${age} Anos`
+  }
+
+  const formattedPets = pets.map(p => ({
+    ...p,
+    owner: p.ownerName || "Desconhecido", 
+    age: calculateAge(p.birthDate || undefined)
+  }))
+
+  async function handleLogout() {
+    "use server"
+    await logout()
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col items-center p-4 md:p-8 font-sans">
+    <div className="min-h-screen w-full bg-[#00060F] relative overflow-hidden text-slate-100 flex flex-col items-center p-4 md:p-8 font-sans">
       
+      {/* Background Blobs */}
+      <div className="absolute top-[-20%] left-[-20%] w-[80vw] h-[80vw] max-w-[1368px] max-h-[1482px] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,102,255,0.2)_0%,rgba(0,32,79,0)_100%)] rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[70vw] h-[60vw] max-w-[1295px] max-h-[841px] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,102,255,0.45)_0%,rgba(0,32,79,0)_100%)] rounded-full blur-3xl pointer-events-none" />
+
       {/* Header */}
-      <header className="w-full max-w-7xl flex items-center justify-between mb-8">
+      <header className="w-full max-w-7xl flex items-center justify-between mb-8 z-10 relative">
         <h1 className="text-3xl font-bold text-slate-200">SoftPet</h1>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleLogout}
-          className="text-slate-400 hover:text-white hover:bg-slate-800"
-        >
-          <LogOut className="h-6 w-6" />
-        </Button>
+        <form action={handleLogout}>
+            <Button 
+            variant="ghost" 
+            size="icon" 
+            type="submit"
+            className="text-slate-400 hover:text-white hover:bg-slate-800"
+            >
+            <LogOut className="h-6 w-6" />
+            </Button>
+        </form>
       </header>
 
       {/* Controls */}
@@ -74,25 +96,12 @@ export default function Dashboard() {
             </Button>
         </div>
 
-        <Button className="bg-[linear-gradient(90deg,#00CAFC_0%,#0056E2_100%)] hover:bg-blue-500 text-white font-semibold px-6 rounded-lg h-12 flex items-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.4)]">
-           <div className="bg-white/20 rounded-full p-0.5">
-               <Plus className="h-4 w-4" />
-           </div>
-           Cadastrar
-        </Button>
+        <CreatePetModal />
       </div>
 
       {/* Grid */}
-      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
-        {pets.map((pet) => (
-           <PetCard 
-                key={pet.id} 
-                pet={pet} 
-                isSelected={selectedPetId === pet.id} 
-                onSelect={handleSelectPet} 
-            />
-        ))}
-      </div>
+      {/* We need a client wrapper for the selection state */}
+      <PetCardWrapper pets={formattedPets} />
 
       {/* Pagination */}
       <div className="w-full max-w-7xl flex justify-end mt-8 items-center gap-2 text-slate-400 text-sm font-medium">
