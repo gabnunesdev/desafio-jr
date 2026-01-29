@@ -11,13 +11,13 @@ const key = new TextEncoder().encode(secretKey)
 
 const registerSchema = z.object({
   name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("Email inválido"),
+  email: z.email("Email inválido"),
   contact: z.string().min(5, "Contato deve ter pelo menos 5 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
 })
 
 const loginSchema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z.email("Email inválido"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
 })
 
@@ -34,7 +34,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
     return {
       success: false,
       message: "Erro de validação",
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: z.treeifyError(validatedFields.error),
     }
   }
 
@@ -83,7 +83,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
     return {
       success: false,
       message: "Erro de validação",
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: z.treeifyError(validatedFields.error),
     }
   }
 

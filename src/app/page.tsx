@@ -1,41 +1,45 @@
 "use client"
 
-import { LogOut, Search, Plus, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
+import { LogOut, Search, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { logout } from "@/actions/auth"
-import Image from "next/image"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card"
 import { toast } from "sonner"
+import { PetCard } from "@/components/pet-card"
 
 // Mock data to match the image
 const pets = [
-  { id: 1, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT" },
-  { id: 2, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG" },
-  { id: 3, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT" },
-  { id: 4, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG" },
-  { id: 5, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT" },
-  { id: 6, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG" },
-  { id: 7, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT" },
-  { id: 8, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG" },
-  { id: 9, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT" },
-  { id: 10, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG" },
-  { id: 11, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT" },
-  { id: 12, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG" },
+  { id: 1, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Persa", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
+  { id: 2, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Dogue Alemão", phone: "(81) 9 8240-2134", birthDate: "15/05/2019", age: "3 Anos" },
+  { id: 3, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Siamês", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
+  { id: 4, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Vira-Lata", phone: "(81) 9 8240-2134", birthDate: "10/01/2022", age: "1 Ano" },
+  { id: 5, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Persa", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
+  { id: 6, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Dogue Alemão", phone: "(81) 9 8240-2134", birthDate: "15/05/2019", age: "3 Anos" },
+  { id: 7, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Siamês", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
+  { id: 8, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Vira-Lata", phone: "(81) 9 8240-2134", birthDate: "10/01/2022", age: "1 Ano" },
+  { id: 9, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Persa", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
+  { id: 10, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Dogue Alemão", phone: "(81) 9 8240-2134", birthDate: "15/05/2019", age: "3 Anos" },
+  { id: 11, name: "Simba Farias", owner: "Emmanuel Farias", type: "CAT", breed: "Siamês", phone: "(81) 9 8240-2134", birthDate: "22/08/2020", age: "2 Anos" },
+  { id: 12, name: "Scooby Doo", owner: "Emmanuel Farias", type: "DOG", breed: "Vira-Lata", phone: "(81) 9 8240-2134", birthDate: "10/01/2022", age: "1 Ano" },
 ]
 
 export default function Dashboard() {
   const router = useRouter()
+  // Store ID of selected pet. Null means none selected.
+  const [selectedPetId, setSelectedPetId] = useState<number | null>(null)
 
   async function handleLogout() {
     await logout()
     toast.success("Saiu com sucesso")
     router.push("/login")
+  }
+
+  function handleSelectPet(id: number) {
+     // Toggle selection
+     setSelectedPetId(prevId => prevId === id ? null : id)
   }
 
   return (
@@ -79,41 +83,14 @@ export default function Dashboard() {
       </div>
 
       {/* Grid */}
-      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
         {pets.map((pet) => (
-          <Card key={pet.id} className="bg-slate-900/50 border-none shadow-none hover:bg-slate-900 transition-colors cursor-pointer group">
-            <CardContent className="p-4 flex items-center gap-4">
-               {/* Icon Circle */}
-               <div className="rounded-full p-3 bg-[linear-gradient(90deg,#00CAFC_0%,#0056E2_100%)] flex items-center justify-center">
-                  {pet.type === 'CAT' ? (
-                     <Image src="/cat-icon.svg" alt="Gato" width={32} height={32} className="h-8 w-8" />
-                  ) : (
-                     <Image src="/dog-icon.svg" alt="Cachorro" width={32} height={32} className="h-8 w-8" />
-                  )}
-               </div>
-               
-               {/* Info */}
-               <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                     <Image src="/collar-icon.svg" alt="Coleira" width={20} height={20} className="w-5 h-5 text-slate-200" />
-                     <span className="truncate text-slate-200 font-bold text-sm">
-                        {pet.name}
-                     </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <Image src="/user-icon.svg" alt="Dono" width={20} height={20} className="w-5 h-5 text-slate-400" />
-                     <span className="truncate text-slate-400 text-xs">
-                        {pet.owner}
-                     </span>
-                  </div>
-               </div>
-
-               {/* Chevron */}
-               <div className="text-white group-hover:text-slate-400">
-                  <ChevronDown className="h-5 w-5" />
-               </div>
-            </CardContent>
-          </Card>
+           <PetCard 
+                key={pet.id} 
+                pet={pet} 
+                isSelected={selectedPetId === pet.id} 
+                onSelect={handleSelectPet} 
+            />
         ))}
       </div>
 
