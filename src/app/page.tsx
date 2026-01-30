@@ -59,11 +59,11 @@ export default async function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#00060F] relative overflow-hidden text-slate-100 flex flex-col items-center p-4 md:p-8 font-sans">
+    <div className="min-h-screen w-full bg-[#00060F] relative overflow-hidden text-slate-100 flex flex-col items-center p-3 md:p-8 font-sans">
       
       {/* Background Blobs */}
-      <div className="absolute top-[-20%] left-[-20%] w-[80vw] h-[80vw] max-w-[1368px] max-h-[1482px] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,102,255,0.2)_0%,rgba(0,32,79,0)_100%)] rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[70vw] h-[60vw] max-w-[1295px] max-h-[841px] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,102,255,0.45)_0%,rgba(0,32,79,0)_100%)] rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-20%] w-[90vw] h-[90vw] md:w-[80vw] md:h-[80vw] max-w-[1368px] max-h-[1482px] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,102,255,0.2)_0%,rgba(0,32,79,0)_100%)] rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[80vw] h-[70vw] md:w-[70vw] md:h-[60vw] max-w-[1295px] max-h-[841px] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,102,255,0.45)_0%,rgba(0,32,79,0)_100%)] rounded-full blur-3xl pointer-events-none" />
 
       {/* Header */}
       <header className="w-full max-w-7xl flex items-center justify-between mb-8 z-10 relative">
