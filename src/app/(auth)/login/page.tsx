@@ -5,12 +5,6 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import Link from "next/link"
 import { Mail, Lock } from "lucide-react" 
-// Note: CheckCircle2 is just a placeholder icon if needed, but only Mail and Lock are strictly valid for Login. The image shows a "Plus" icon for Register. For Login, "Log In" icon or just text.
-// The image has a big "Plus" icon in a circle for "Cadastrar". For "Entrar", I might use a User icon or Lock icon in the header.
-// I'll stick to a simple clean header "Entrar" as requested, or maybe "Login" with a generic icon.
-// The image header: Icon (Circle with Plus) + "Cadastrar".
-// For Login, maybe Icon (Circle with User/Lock) + "Entrar".
-// I'll use a User icon.
 
 import { User } from "lucide-react"
 
@@ -77,10 +71,7 @@ export default function LoginPage() {
           but for now just a clean dark background as per 'identical styling' instruction focus on the form. */}
       
       <Card className="w-full max-w-md bg-slate-900 border-blue-500/50 shadow-[0_0_40px_rgba(59,130,246,0.15)] text-slate-100 sm:rounded-xl overflow-hidden relative border">
-         {/* Close button X mimic */}
-        <div className="absolute right-4 top-4 text-slate-400 cursor-pointer hover:text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="6 6 18 18"/></svg>
-        </div>
+
 
         <CardHeader className="space-y-1 flex flex-row items-center justify-center gap-3 pt-10 pb-6">
           <div className="bg-blue-600 rounded-full p-2 shadow-[0_0_15px_rgba(37,99,235,0.5)]">

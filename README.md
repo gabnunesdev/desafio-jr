@@ -1,5 +1,15 @@
 # SoftPet - Gerenciador de Pets 🐾
 
+<div align="center">
+
+[![Deploy Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://soft-pet.vercel.app)
+[![Database Neon](https://img.shields.io/badge/Database-Neon-00E599?style=for-the-badge&logo=postgresql&logoColor=white)](https://neon.tech)
+[![Status Online](https://img.shields.io/website?url=https%3A%2F%2Fsoft-pet.vercel.app&label=Online&style=for-the-badge&color=success)](https://soft-pet.vercel.app)
+
+### 🚀 [Clique aqui para acessar a Demo Online](https://soft-pet.vercel.app)
+
+</div>
+
 Bem-vindo ao **SoftPet**, a aplicação desenvolvida como parte do Desafio Jr. Este projeto é um dashboard completo para gerenciamento de pets e seus donos, apresentando uma interface moderna, responsiva e performática.
 
 ![Dashboard Preview](./public/03%20-%20dashboard.png)

@@ -85,12 +85,7 @@ export default function RegisterPage() {
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
       
       <Card className="w-full max-w-2xl bg-slate-900 border-blue-500/50 shadow-[0_0_40px_rgba(59,130,246,0.15)] text-slate-100 sm:rounded-xl overflow-hidden relative border">
-         {/* Close button mimic */}
-         <Link href="/login">
-            <div className="absolute right-4 top-4 text-slate-400 cursor-pointer hover:text-white transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="6 6 18 18"/></svg>
-            </div>
-         </Link>
+
 
         <CardHeader className="space-y-1 flex flex-row items-center gap-3 pt-10 pb-6 px-10">
           <div className="bg-blue-600 rounded-full p-2 shadow-[0_0_15px_rgba(37,99,235,0.5)]">
