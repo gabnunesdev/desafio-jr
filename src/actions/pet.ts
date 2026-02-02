@@ -75,3 +75,123 @@ export async function createPet(prevState: any, formData: FormData) {
     return { error: "Erro ao criar pet. Tente novamente." }
   }
 }
+const updatePetSchema = createPetSchema.extend({
+  id: z.string(), // We'll receive ID from formData
+})
+
+export async function updatePet(prevState: any, formData: FormData) {
+  // 1. Validate Session
+  const cookieStore = await cookies()
+  const session = cookieStore.get("session")?.value
+
+  if (!session) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  let userId: number
+  try {
+    const { payload } = await jwtVerify(session, key, { algorithms: ["HS256"] })
+    userId = Number(payload.sub)
+  } catch (err) {
+    return { error: "Sessão inválida" }
+  }
+
+  // 2. Validate Data
+  const rawData = {
+    id: formData.get("id"),
+    name: formData.get("name"),
+    type: formData.get("type"),
+    breed: formData.get("breed"),
+    ownerName: formData.get("ownerName"),
+    ownerPhone: formData.get("ownerPhone"),
+    birthDate: formData.get("birthDate"),
+  }
+
+  const validatedFields = updatePetSchema.safeParse(rawData)
+
+  if (!validatedFields.success) {
+    const errorMap = validatedFields.error.flatten().fieldErrors
+    const firstError = Object.values(errorMap)[0]?.[0] || "Erro na validação dos dados"
+    return { error: firstError }
+  }
+
+  const petId = Number(validatedFields.data.id)
+
+  // 3. Verify Ownership
+  const existingPet = await prisma.pet.findUnique({
+    where: { id: petId },
+  })
+
+  if (!existingPet) {
+    return { error: "Pet não encontrado (404)" }
+  }
+
+  if (existingPet.ownerId !== userId) {
+    return { error: "Você não tem permissão para editar este pet (403)" }
+  }
+
+  // 4. Update Pet in DB
+  try {
+    await prisma.pet.update({
+      where: { id: petId },
+      data: {
+        name: validatedFields.data.name,
+        type: validatedFields.data.type,
+        breed: validatedFields.data.breed,
+        ownerName: validatedFields.data.ownerName,
+        ownerPhone: validatedFields.data.ownerPhone,
+        birthDate: validatedFields.data.birthDate,
+      },
+    })
+    
+    revalidatePath("/")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao atualizar pet:", error)
+    return { error: "Erro ao atualizar pet. Tente novamente." }
+  }
+}
+
+export async function deletePet(id: number) {
+  // 1. Validate Session
+  const cookieStore = await cookies()
+  const session = cookieStore.get("session")?.value
+
+  if (!session) {
+    return { error: "Usuário não autenticado" }
+  }
+
+  let userId: number
+  try {
+    const { payload } = await jwtVerify(session, key, { algorithms: ["HS256"] })
+    userId = Number(payload.sub)
+  } catch (err) {
+    return { error: "Sessão inválida" }
+  }
+
+  // 2. Verify Ownership
+  const existingPet = await prisma.pet.findUnique({
+    where: { id },
+  })
+
+  if (!existingPet) {
+    return { error: "Pet não encontrado (404)" }
+  }
+
+  if (existingPet.ownerId !== userId) {
+    return { error: "Você não tem permissão para excluir este pet (403)" }
+  }
+
+  // 3. Delete Pet
+  try {
+    await prisma.pet.delete({
+      where: { id },
+    })
+    
+    revalidatePath("/")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao excluir pet:", error)
+    return { error: "Erro ao excluir pet. Tente novamente." }
+  }
+}

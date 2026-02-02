@@ -28,9 +28,11 @@ export type AuthState = {
 }
 
 export async function register(values: z.infer<typeof registerSchema>) {
+  console.log("Register action called with:", JSON.stringify({ ...values, password: "***" }))
   const validatedFields = registerSchema.safeParse(values)
 
   if (!validatedFields.success) {
+    console.log("Validation failed:", validatedFields.error)
     return {
       success: false,
       message: "Erro de validação",
@@ -39,6 +41,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
   }
 
   const { name, email, contact, password } = validatedFields.data
+  console.log("Validation passed. Checking existing user for email:", email)
 
   try {
     const existingUser = await prisma.user.findUnique({
@@ -46,15 +49,18 @@ export async function register(values: z.infer<typeof registerSchema>) {
     })
 
     if (existingUser) {
+      console.log("User already exists:", email)
       return {
         success: false,
         message: "Este email já está cadastrado.",
       }
     }
 
+    console.log("Hashing password...")
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    await prisma.user.create({
+    console.log("Creating user in database...")
+    const newUser = await prisma.user.create({
       data: {
         name,
         email,
@@ -62,16 +68,17 @@ export async function register(values: z.infer<typeof registerSchema>) {
         password: hashedPassword,
       },
     })
+    console.log("User created successfully:", newUser.id)
 
     return {
       success: true,
       message: "Usuário cadastrado com sucesso!",
     }
-  } catch (error) {
-    console.error("Registration error:", error)
+  } catch (error: any) {
+    console.error("Registration error FULL DEBUG:", error)
     return {
       success: false,
-      message: "Erro ao criar conta. Tente novamente mais tarde.",
+      message: `Erro debug: ${error?.message || "Erro desconhecido"}`,
     }
   }
 }
@@ -115,6 +122,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
     const session = await new SignJWT({ userId: user.id, email: user.email })
       .setProtectedHeader({ alg: "HS256" })
+      .setSubject(user.id.toString())
       .setIssuedAt()
       .setExpirationTime("24h")
       .sign(key)

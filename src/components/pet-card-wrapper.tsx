@@ -16,7 +16,7 @@ interface Pet {
     ownerPhone?: string | null
 }
 
-export function PetCardWrapper({ pets }: { pets: Pet[] }) {
+export function PetCardWrapper({ pets, currentUserId }: { pets: Pet[], currentUserId: number }) {
     const [selectedPetId, setSelectedPetId] = useState<number | null>(null)
 
     function handleSelectPet(id: number) {
@@ -35,7 +35,8 @@ export function PetCardWrapper({ pets }: { pets: Pet[] }) {
                     breed: pet.breed || undefined,
                     phone: pet.ownerPhone || undefined,
                     birthDate: pet.birthDate || undefined,
-                    age: pet.age
+                    age: pet.age,
+                    ownerId: (pet as any).ownerId // Ensure ownerId is available in input "pet" or properly typed
                 }
 
                 return (
@@ -44,6 +45,7 @@ export function PetCardWrapper({ pets }: { pets: Pet[] }) {
                         pet={adaptedPet} 
                         isSelected={selectedPetId === pet.id} 
                         onSelect={handleSelectPet} 
+                        currentUserId={currentUserId}
                     />
                 )
             })}

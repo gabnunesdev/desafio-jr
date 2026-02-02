@@ -9,6 +9,11 @@ import { PetCardWrapper } from "@/components/pet-card-wrapper" // Client compone
 import { CreatePetModal } from "@/components/create-pet-modal"
 import { prisma } from "@/lib/prisma"
 
+import { jwtVerify } from "jose"
+
+const secretKey = "secret-key-change-me"
+const key = new TextEncoder().encode(secretKey)
+
 export default async function Dashboard() {
   const cookieStore = await cookies()
   const session = cookieStore.get("session")?.value
@@ -17,22 +22,20 @@ export default async function Dashboard() {
     redirect("/login")
   }
 
-  // Verify session/Get User ID if needed for specific fetching, 
-  // currently we fetch all or just user's? Requirement: "Create... only owner can edit/delete". 
-  // Usually dashboard shows all pets or user's pets? The image suggests a list. 
-  // Let's fetch ALL pets for now, or filter by user if it's a personal dashboard. 
-  // "Fluxo de Cadastro... O card irá receber infor...". 
-  // Given the login context, it's likely a user dashboard.
-  // I will fetch pets for the logged in user as per common practice, 
-  // OR fetch all if it's a shared system. The mock showed multiple owners "Emmanuel Farias". 
-  // I'll fetch ALL pets but mark ownership logic later if needed. 
-  // Actually, let's just fetch all for this "Desafio Jr".
+  let userId: number
+  try {
+    const { payload } = await jwtVerify(session, key, { algorithms: ["HS256"] })
+    userId = Number(payload.sub) || Number(payload.userId) // Fallback for old tokens if any
+  } catch (error) {
+    console.error(error)
+    redirect("/login")
+  }
 
   const pets = await prisma.pet.findMany({
     orderBy: { createdAt: 'desc' },
   })
 
-  // Calculate age helper
+
   const calculateAge = (birthDateString?: string) => {
     if (!birthDateString) return undefined
     const [day, month, year] = birthDateString.split('/').map(Number)
@@ -101,7 +104,7 @@ export default async function Dashboard() {
 
       {/* Grid */}
       {/* We need a client wrapper for the selection state */}
-      <PetCardWrapper pets={formattedPets} />
+      <PetCardWrapper pets={formattedPets} currentUserId={userId} />
 
       {/* Pagination */}
       <div className="w-full max-w-7xl flex justify-end mt-8 items-center gap-2 text-slate-400 text-sm font-medium">
