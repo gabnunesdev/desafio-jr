@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, PetType } from '@prisma/client'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 import 'dotenv/config'
@@ -24,7 +24,7 @@ async function main() {
   })
 
   // Create 50 pets
-  const petTypes = ['DOG', 'CAT']
+  const petTypes: PetType[] = ['DOG', 'CAT']
   const breeds = ['Vira-lata', 'Labrador', 'Poodle', 'Persa', 'Siamês']
   
   for (let i = 1; i <= 50; i++) {
