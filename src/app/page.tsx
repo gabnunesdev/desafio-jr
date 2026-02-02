@@ -5,6 +5,7 @@ import { cookies } from "next/headers"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { SearchBar } from "@/components/search-bar"
 import { PetCardWrapper } from "@/components/pet-card-wrapper" // Client component for state
 import { CreatePetModal } from "@/components/create-pet-modal"
 import { prisma } from "@/lib/prisma"
@@ -90,30 +91,14 @@ export default async function Dashboard(props: DashboardProps) {
             type="submit"
             className="text-slate-400 hover:text-white hover:bg-slate-800"
             >
-            <LogOut className="h-6 w-6" />
+            <LogOut size={32} color="#fff" />
             </Button>
         </form>
       </header>
 
       {/* Controls */}
       <div className="w-full max-w-7xl flex flex-col md:flex-row gap-4 mb-8">
-        <form className="flex-1 relative">
-            <div className="relative w-full flex items-center bg-transparent border-3 border-[#404A5C] rounded-[10px] h-14  focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all shadow-inner">
-            <div className="bg-[#404A5C] rounded-l-[5px] w-12 h-13 flex items-center justify-center">
-              <Search className="h-6 w-6 text-[#0F1629]" />
-            </div>
-                
-                <Input 
-                    name="q"
-                    defaultValue={query}
-                    placeholder="Buscar por pet ou dono..." 
-                    className="flex-1 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-slate-200 placeholder:text-slate-500 h-full text-base"
-                />
-                <Button type="submit" className="bg-[#404A5C] mr-2 hover:bg-slate-700 text-slate-200 font-medium px-6 rounded-[5px] h-10 shadow-sm">
-                    Pesquisar
-                </Button>
-            </div>
-        </form>
+        <SearchBar />
 
         <CreatePetModal />
       </div>

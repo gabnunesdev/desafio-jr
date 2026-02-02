@@ -107,7 +107,7 @@ export function CreatePetModal() {
                 id="name"
                 placeholder={PLACEHOLDERS.name}
                 {...register("name")}
-                className="bg-[#0F1629] border-slate-700/50 focus:border-blue-500 rounded-xl h-12 text-slate-200 placeholder:text-slate-600"
+                className="bg-[#0F1629] border-slate-700/50 focus:border-blue-500 rounded-xl h-12 text-slate-200 placeholder:text-slate-600 selection:text-blue-500 selection:bg-blue-500/20"
               />
             </FormField>
 
@@ -118,7 +118,7 @@ export function CreatePetModal() {
                 id="ownerName"
                 placeholder={PLACEHOLDERS.ownerName}
                 {...register("ownerName")}
-                className="bg-[#0F1629] border-slate-700/50 focus:border-blue-500 rounded-xl h-12 text-slate-200 placeholder:text-slate-600"
+                className="bg-[#0F1629] border-slate-700/50 focus:border-blue-500 rounded-xl h-12 text-slate-200 placeholder:text-slate-600  selection:text-blue-500 selection:bg-blue-500/20"
               />
             </FormField>
 
@@ -127,7 +127,7 @@ export function CreatePetModal() {
                 id="breed"
                 placeholder={PLACEHOLDERS.breed}
                 {...register("breed")}
-                className="bg-[#0F1629] border-slate-700/50 focus:border-blue-500 rounded-xl h-12 text-slate-200 placeholder:text-slate-600"
+                className="bg-[#0F1629] border-slate-700/50 focus:border-blue-500 rounded-xl h-12 text-slate-200 placeholder:text-slate-600  selection:text-blue-500 selection:bg-blue-500/20"
               />
             </FormField>
 
@@ -137,7 +137,7 @@ export function CreatePetModal() {
                 placeholder={PLACEHOLDERS.phone}
                 {...register("ownerPhone")}
                 onChange={handlePhoneChange}
-                className="bg-[#0F1629] border-slate-700/50 focus:border-blue-500 rounded-xl h-12 text-slate-200 placeholder:text-slate-600"
+                className="bg-[#0F1629] border-slate-700/50 focus:border-blue-500 rounded-xl h-12 text-slate-200 placeholder:text-slate-600  selection:text-blue-500 selection:bg-blue-500/20"
               />
             </FormField>
 
