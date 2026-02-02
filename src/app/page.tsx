@@ -14,7 +14,13 @@ import { jwtVerify } from "jose"
 const secretKey = process.env.JWT_SECRET || "default-dev-secret"
 const key = new TextEncoder().encode(secretKey)
 
-export default async function Dashboard() {
+interface DashboardProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function Dashboard(props: DashboardProps) {
+  const searchParams = await props.searchParams
+  const query = typeof searchParams.q === 'string' ? searchParams.q : undefined
   const cookieStore = await cookies()
   const session = cookieStore.get("session")?.value
 
@@ -32,6 +38,12 @@ export default async function Dashboard() {
   }
 
   const pets = await prisma.pet.findMany({
+    where: query ? {
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { ownerName: { contains: query, mode: 'insensitive' } }
+      ]
+    } : undefined,
     orderBy: { createdAt: 'desc' },
   })
 
@@ -85,19 +97,23 @@ export default async function Dashboard() {
 
       {/* Controls */}
       <div className="w-full max-w-7xl flex flex-col md:flex-row gap-4 mb-8">
-        <div className="flex-1 flex gap-2 relative">
-            <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
-                <Input 
-                    placeholder="" 
-                    className="w-full pl-10 bg-slate-900/50 border-slate-800 text-slate-200 focus:border-blue-500/50 focus:ring-blue-500/20 rounded-lg h-12"
-                />
+        <form className="flex-1 relative">
+            <div className="relative w-full flex items-center bg-transparent border-3 border-[#404A5C] rounded-[10px] h-14  focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all shadow-inner">
+            <div className="bg-[#404A5C] rounded-l-[5px] w-12 h-13 flex items-center justify-center">
+              <Search className="h-6 w-6 text-[#0F1629]" />
             </div>
-            
-            <Button className="bg-slate-700 hover:bg-slate-600 text-slate-100 font-medium px-6 rounded-lg h-12">
-                Pesquisar
-            </Button>
-        </div>
+                
+                <Input 
+                    name="q"
+                    defaultValue={query}
+                    placeholder="Buscar por pet ou dono..." 
+                    className="flex-1 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-slate-200 placeholder:text-slate-500 h-full text-base"
+                />
+                <Button type="submit" className="bg-[#404A5C] mr-2 hover:bg-slate-700 text-slate-200 font-medium px-6 rounded-[5px] h-10 shadow-sm">
+                    Pesquisar
+                </Button>
+            </div>
+        </form>
 
         <CreatePetModal />
       </div>

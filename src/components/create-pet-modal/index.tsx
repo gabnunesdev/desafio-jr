@@ -88,8 +88,8 @@ export function CreatePetModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-[linear-gradient(90deg,#00CAFC_0%,#0056E2_100%)] hover:bg-blue-500 text-white font-semibold px-6 rounded-lg h-12 flex items-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.4)]">
-          <div className="bg-white/20 rounded-full p-0.5">
-            <Plus className="h-4 w-4" />
+          <div className="border-white border-2 rounded-full p-0.5">
+            <Plus className="h-4 w-4 stroke-2" />
           </div>
           {LABELS.register}
         </Button>
