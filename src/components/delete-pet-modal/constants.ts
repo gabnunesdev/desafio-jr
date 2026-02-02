@@ -15,7 +15,7 @@ export const COLORS = {
     primary: "slate-100",
     secondary: "slate-300",
     muted: "slate-600",
-    error: "red-400",
+    error: "#ED254E",
   },
 } as const
 
@@ -51,10 +51,9 @@ export const LABELS = {
   breed: "Raça",
   phone: "Telefone",
   birthDate: "Nascimento (Aproximado)",
-  title: "Editar",
-  register: "Salvar",
+  register: "Remover",
   back: "Voltar",
-  registering: "Salvando...",
+  registering: "Removendo...",
 } as const
 
 export const ICONS = {

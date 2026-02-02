@@ -60,6 +60,7 @@ export default function LoginPage() {
       
       if (response.success) {
         toast.success(response.message)
+        router.refresh()
         router.push("/")
       } else {
         toast.error(response.message)

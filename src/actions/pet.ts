@@ -6,7 +6,7 @@ import { jwtVerify } from "jose"
 
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-const secretKey = "secret-key-change-me"
+const secretKey = process.env.JWT_SECRET || "default-dev-secret"
 const key = new TextEncoder().encode(secretKey)
 
 const createPetSchema = z.object({

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { jwtVerify } from "jose"
 
-const secretKey = "secret-key-change-me"
+const secretKey = process.env.JWT_SECRET || "default-dev-secret"
 const key = new TextEncoder().encode(secretKey)
 
 export async function middleware(request: NextRequest) {

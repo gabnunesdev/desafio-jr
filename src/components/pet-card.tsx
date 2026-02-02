@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { EditPetModal } from "./edit-pet-modal"
+import { DeletePetModal } from "./delete-pet-modal"
 
 interface Pet {
     id: number
@@ -14,7 +15,7 @@ interface Pet {
     phone?: string
     birthDate?: string
     age?: string
-    ownerId: number // Added ownerId
+    ownerId: number
     ownerName?: string | null
     ownerPhone?: string | null
 }
@@ -23,11 +24,12 @@ interface PetCardProps {
     pet: Pet
     isSelected: boolean
     onSelect: (id: number) => void
-    currentUserId: number // Added currentUserId
+    currentUserId: number
 }
 
 export function PetCard({ pet, isSelected, onSelect, currentUserId }: PetCardProps) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const isOwner = currentUserId === pet.ownerId
 
     // Base classes
@@ -48,6 +50,11 @@ export function PetCard({ pet, isSelected, onSelect, currentUserId }: PetCardPro
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation() // Prevent card selection when clicking edit
         setIsEditModalOpen(true)
+    }
+
+    const handleDeleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        setIsDeleteModalOpen(true)
     }
 
     return (
@@ -104,7 +111,7 @@ export function PetCard({ pet, isSelected, onSelect, currentUserId }: PetCardPro
                                  </div>
                                  <div className="flex items-center gap-2">
                                     <Image src="/phone.svg" alt="Telefone" width={16} height={16} className="w-4 h-4 text-slate-400" />
-                                    <span className="font-medium">Telefone:</span> {pet.clone || pet.phone || "Não informado"}
+                                    <span className="font-medium">Telefone:</span> {pet.phone || "Não informado"}
                                  </div>
                                  <div className="flex items-center gap-2">
                                     <Image src="/calendar.svg" alt="Idade" width={16} height={16} className="w-4 h-4 text-slate-400" />
@@ -121,7 +128,10 @@ export function PetCard({ pet, isSelected, onSelect, currentUserId }: PetCardPro
                                     >
                                         <Image src="/edit.svg" alt="Editar" width={16} height={16} className="w-4 h-4 mr-2" /> Editar
                                     </Button>
-                                    <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 font-semibold h-10 rounded-lg">
+                                    <Button 
+                                        className="w-full bg-blue-600 text-white hover:bg-blue-700 font-semibold h-10 rounded-lg"
+                                        onClick={handleDeleteClick}
+                                    >
                                         <Trash2 className="w-4 h-4 mr-2" /> Remover
                                     </Button>
                                 </div>
@@ -136,6 +146,12 @@ export function PetCard({ pet, isSelected, onSelect, currentUserId }: PetCardPro
                 open={isEditModalOpen} 
                 onOpenChange={setIsEditModalOpen} 
                 pet={pet} 
+            />
+            
+            <DeletePetModal
+                open={isDeleteModalOpen}
+                onOpenChange={setIsDeleteModalOpen}
+                pet={pet}
             />
         </>
     )

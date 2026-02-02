@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma"
 import { SignJWT } from "jose"
 import { cookies } from "next/headers"
 
-const secretKey = "secret-key-change-me" // In production use process.env.JWT_SECRET
+const secretKey = process.env.JWT_SECRET || "default-dev-secret" // In production use process.env.JWT_SECRET
 const key = new TextEncoder().encode(secretKey)
 
 const registerSchema = z.object({
@@ -132,6 +132,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
         httpOnly: true, 
         secure: process.env.NODE_ENV === "production",
         expires: expires,
+        sameSite: "lax",
         path: "/" 
     })
 
