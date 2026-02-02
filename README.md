@@ -2,7 +2,7 @@
 
 Bem-vindo ao **SoftPet**, a aplicação desenvolvida como parte do Desafio Jr. Este projeto é um dashboard completo para gerenciamento de pets e seus donos, apresentando uma interface moderna, responsiva e performática.
 
-![Dashboard Preview](./public/print-dashboard.png)
+![Dashboard Preview](./public/03%20-%20dashboard.png)
 _(Adicione um print do dashboard aqui)_
 
 ## 🚀 Tecnologias Utilizadas
