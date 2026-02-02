@@ -1,8 +1,8 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
-import { updatePet, deletePet } from '../pet'
+import { deletePet } from '../pet'
 import { prisma } from '@/lib/prisma'
-import { DeepMockProxy, mockReset } from 'vitest-mock-extended'
-import { PrismaClient } from '@prisma/client'
+import { DeepMockProxy } from 'vitest-mock-extended'
+import { PrismaClient, Pet } from '@prisma/client'
 import { jwtVerify } from 'jose'
 
 const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>
@@ -24,13 +24,29 @@ vi.mock('next/headers', () => ({
     })
 }))
 
+// Helper to create a complete mock Pet object to satisfy Typescript
+const createMockPet = (overrides?: Partial<Pet>): Pet => ({
+    id: 1,
+    name: "Rex",
+    type: "DOG",
+    breed: "Vira-lata",
+    birthDate: "01/01/2021",
+    ownerName: "João",
+    ownerPhone: "11999999999",
+    ownerId: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+})
+
 describe('Pet Actions', () => {
     beforeEach(() => {
         vi.clearAllMocks()
         // Default valid session simulation
         vi.mocked(jwtVerify).mockResolvedValue({
             payload: { sub: "1" },
-            protectedHeader: { alg: "HS256" }
+            protectedHeader: { alg: "HS256" },
+            key: new Uint8Array()
         })
     })
 
@@ -43,24 +59,24 @@ describe('Pet Actions', () => {
         })
 
         it('should return 403 if user is not the owner', async () => {
-            prismaMock.pet.findUnique.mockResolvedValue({
+            prismaMock.pet.findUnique.mockResolvedValue(createMockPet({
                 id: 1,
                 name: "Rex",
                 ownerId: 2 // Different from session userId (1)
-            } as any)
+            }))
 
             const result = await deletePet(1)
             expect(result.error).toContain("permissão")
         })
 
         it('should delete successfully if user is owner', async () => {
-            prismaMock.pet.findUnique.mockResolvedValue({
+            prismaMock.pet.findUnique.mockResolvedValue(createMockPet({
                 id: 1,
                 name: "Rex",
                 ownerId: 1 // Matches session userId (1)
-            } as any)
+            }))
             
-            prismaMock.pet.delete.mockResolvedValue({ id: 1 } as any)
+            prismaMock.pet.delete.mockResolvedValue(createMockPet({ id: 1 }))
 
             const result = await deletePet(1)
             expect(result.success).toBe(true)

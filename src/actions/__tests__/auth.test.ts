@@ -1,10 +1,9 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { register, login } from '../auth'
 import { prisma } from '@/lib/prisma'
-import { DeepMockProxy, mockReset } from 'vitest-mock-extended'
-import { PrismaClient } from '@prisma/client'
+import { DeepMockProxy } from 'vitest-mock-extended'
+import { PrismaClient, User } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import { SignJWT } from 'jose'
 
 const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>
 
@@ -15,6 +14,17 @@ vi.mock('bcryptjs', () => ({
     compare: vi.fn(),
   },
 }))
+
+const createMockUser = (overrides?: Partial<User>): User => ({
+  id: 1,
+  name: "Test User",
+  email: "test@example.com",
+  contact: "12345",
+  password: "hashed_password",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  ...overrides,
+})
 
 describe('Auth Actions', () => {
     beforeEach(() => {
@@ -35,7 +45,7 @@ describe('Auth Actions', () => {
     })
 
     it('should fail if email already exists', async () => {
-      prismaMock.user.findUnique.mockResolvedValue({ id: 1, email: 'test@example.com' } as any)
+      prismaMock.user.findUnique.mockResolvedValue(createMockUser({ email: 'test@example.com' }))
 
       const result = await register({
         name: 'Test User',
@@ -51,7 +61,10 @@ describe('Auth Actions', () => {
     it('should create user successfully', async () => {
       prismaMock.user.findUnique.mockResolvedValue(null)
       vi.mocked(bcrypt.hash).mockResolvedValue('hashed_password' as never)
-      prismaMock.user.create.mockResolvedValue({ id: 1, name: 'Test User' } as any)
+      prismaMock.user.create.mockResolvedValue(createMockUser({ 
+          email: 'new@example.com',
+          name: 'Test User' 
+      }))
 
       const result = await register({
         name: 'Test User',
