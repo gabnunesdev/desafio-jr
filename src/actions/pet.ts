@@ -18,7 +18,12 @@ const createPetSchema = z.object({
   birthDate: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, "Data inválida (DD/MM/AAAA)"),
 })
 
-export async function createPet(prevState: any, formData: FormData) {
+export type PetState = {
+  success?: boolean
+  error?: string
+}
+
+export async function createPet(prevState: PetState | null, formData: FormData): Promise<PetState> {
   // 1. Validate Session
   const cookieStore = await cookies()
   const session = cookieStore.get("session")?.value
@@ -31,7 +36,8 @@ export async function createPet(prevState: any, formData: FormData) {
   try {
     const { payload } = await jwtVerify(session, key, { algorithms: ["HS256"] })
     userId = Number(payload.sub)
-  } catch (err) {
+  } catch (error) {
+    console.error("Erro ao verificar sessão:", error)
     return { error: "Sessão inválida" }
   }
 
@@ -79,7 +85,7 @@ const updatePetSchema = createPetSchema.extend({
   id: z.string(), // We'll receive ID from formData
 })
 
-export async function updatePet(prevState: any, formData: FormData) {
+export async function updatePet(prevState: PetState | null, formData: FormData): Promise<PetState> {
   // 1. Validate Session
   const cookieStore = await cookies()
   const session = cookieStore.get("session")?.value
@@ -92,7 +98,8 @@ export async function updatePet(prevState: any, formData: FormData) {
   try {
     const { payload } = await jwtVerify(session, key, { algorithms: ["HS256"] })
     userId = Number(payload.sub)
-  } catch (err) {
+  } catch (error) {
+    console.error("Erro ao verificar sessão:", error)
     return { error: "Sessão inválida" }
   }
 
@@ -152,7 +159,7 @@ export async function updatePet(prevState: any, formData: FormData) {
   }
 }
 
-export async function deletePet(id: number) {
+export async function deletePet(id: number): Promise<PetState> {
   // 1. Validate Session
   const cookieStore = await cookies()
   const session = cookieStore.get("session")?.value
@@ -165,7 +172,8 @@ export async function deletePet(id: number) {
   try {
     const { payload } = await jwtVerify(session, key, { algorithms: ["HS256"] })
     userId = Number(payload.sub)
-  } catch (err) {
+  } catch (error) {
+    console.error("Erro ao verificar sessão:", error)
     return { error: "Sessão inválida" }
   }
 

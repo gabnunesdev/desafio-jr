@@ -27,7 +27,7 @@ export type AuthState = {
   errors?: Record<string, string[]>
 }
 
-export async function register(values: z.infer<typeof registerSchema>) {
+export async function register(values: z.infer<typeof registerSchema>): Promise<AuthState> {
   console.log("Register action called with:", JSON.stringify({ ...values, password: "***" }))
   const validatedFields = registerSchema.safeParse(values)
 
@@ -36,7 +36,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
     return {
       success: false,
       message: "Erro de validação",
-      errors: z.treeifyError(validatedFields.error),
+      errors: validatedFields.error.flatten().fieldErrors,
     }
   }
 
@@ -74,11 +74,11 @@ export async function register(values: z.infer<typeof registerSchema>) {
       success: true,
       message: "Usuário cadastrado com sucesso!",
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Registration error FULL DEBUG:", error)
     return {
       success: false,
-      message: `Erro debug: ${error?.message || "Erro desconhecido"}`,
+      message: `Erro debug: ${(error as Error)?.message || "Erro desconhecido"}`,
     }
   }
 }
