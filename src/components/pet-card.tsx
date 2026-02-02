@@ -85,7 +85,7 @@ export function PetCard({ pet, isSelected, onSelect, currentUserId }: PetCardPro
                             </div>
                             <div className="flex items-center gap-2">
                                 <Image src="/user-icon.svg" alt="Dono" width={20} height={20} className="w-4 h-4 text-slate-400" />
-                                <span className="truncate text-slate-400 text-xs">
+                                <span className="truncate text-slate-200 text-sm">
                                     {pet.owner}
                                 </span>
                             </div>
@@ -129,7 +129,7 @@ export function PetCard({ pet, isSelected, onSelect, currentUserId }: PetCardPro
                                         <Image src="/edit.svg" alt="Editar" width={16} height={16} className="w-4 h-4 mr-2" /> Editar
                                     </Button>
                                     <Button 
-                                        className="w-full bg-blue-600 text-white hover:bg-blue-700 font-semibold h-10 rounded-lg"
+                                        className="w-full bg-[linear-gradient(90deg,#00CAFC_0%,#0056E2_100%)] text-white hover:bg-blue-700 font-semibold h-10 rounded-lg"
                                         onClick={handleDeleteClick}
                                     >
                                         <Trash2 className="w-4 h-4 mr-2" /> Remover

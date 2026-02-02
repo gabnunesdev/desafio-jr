@@ -4,6 +4,7 @@ import { logout } from "@/actions/auth"
 import { cookies } from "next/headers"
 
 import { Button } from "@/components/ui/button"
+import { PaginationControls } from "@/components/pagination-controls"
 import { Input } from "@/components/ui/input"
 import { SearchBar } from "@/components/search-bar"
 import { PetCardWrapper } from "@/components/pet-card-wrapper" // Client component for state
@@ -38,16 +39,29 @@ export default async function Dashboard(props: DashboardProps) {
     redirect("/login")
   }
 
-  const pets = await prisma.pet.findMany({
-    where: query ? {
-      OR: [
-        { name: { contains: query, mode: 'insensitive' } },
-        { ownerName: { contains: query, mode: 'insensitive' } }
-      ]
-    } : undefined,
-    orderBy: { createdAt: 'desc' },
-  })
+  const currentPage = Number(searchParams.page) || 1
+  const itemsPerPage = 16
 
+  const whereCondition = query ? {
+      OR: [
+        { name: { contains: query, mode: 'insensitive' as const } },
+        { ownerName: { contains: query, mode: 'insensitive' as const } }
+      ]
+    } : {}
+
+  const [pets, totalCount] = await Promise.all([
+    prisma.pet.findMany({
+      where: whereCondition,
+      orderBy: { createdAt: 'desc' },
+      take: itemsPerPage,
+      skip: (currentPage - 1) * itemsPerPage,
+    }),
+    prisma.pet.count({
+      where: whereCondition,
+    })
+  ])
+
+  const totalPages = Math.ceil(totalCount / itemsPerPage)
 
   const calculateAge = (birthDateString?: string) => {
     if (!birthDateString) return undefined
@@ -108,15 +122,11 @@ export default async function Dashboard(props: DashboardProps) {
       <PetCardWrapper pets={formattedPets} currentUserId={userId} />
 
       {/* Pagination */}
-      <div className="w-full max-w-7xl flex justify-end mt-8 items-center gap-2 text-slate-400 text-sm font-medium">
-          <Button variant="ghost" size="icon" className="hover:text-white hover:bg-slate-800">
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <span>1 de 365</span>
-          <Button variant="ghost" size="icon" className="hover:text-white hover:bg-slate-800">
-            <ChevronRight className="h-5 w-5" />
-          </Button>
-      </div>
+      <PaginationControls 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalCount={totalCount}
+      />
 
     </div>
   )

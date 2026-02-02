@@ -14,15 +14,23 @@ export function SearchBar() {
   // Local state for immediate input feedback
   const [term, setTerm] = useState(searchParams.get("q")?.toString() || "")
 
-  // Debounce logic
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       const params = new URLSearchParams(searchParams)
+      const currentQuery = params.get("q") || ""
+      
+      // Prevent infinite loop: only update if term is different from URL
+      if (term === currentQuery) return
+
       if (term) {
         params.set("q", term)
       } else {
         params.delete("q")
       }
+      
+      // Reset to page 1 on new search
+      params.delete("page")
+      
       replace(`${pathname}?${params.toString()}`)
     }, 500) // 500ms delay
 
