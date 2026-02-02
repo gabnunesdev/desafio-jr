@@ -5,7 +5,7 @@ import { jwtVerify } from "jose"
 const secretKey = process.env.JWT_SECRET || "default-dev-secret"
 const key = new TextEncoder().encode(secretKey)
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const session = request.cookies.get("session")?.value
 
   // If trying to access login or register page
